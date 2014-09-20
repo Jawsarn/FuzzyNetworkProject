@@ -1,10 +1,12 @@
 /*this is not a fuzzy main*/
-
+#define _WINSOCK_DEPRECATED_NO_WARNINGS
 #include <winsock2.h>
 #include <iostream>
 
  
 using namespace std;
+
+
 
 
 
