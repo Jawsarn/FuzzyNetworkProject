@@ -12,6 +12,10 @@ AF_INET and PF_INET is the same PF_INET is defined as AF_INET
 SOCKET g_ServerSocket;
 SOCKET g_ClientSocket;
 bool Startup();
+void SendData(SOCKET p_Socket, std::string p_Message);
+std::string RecieveData(SOCKET p_Socket);
+
+
 
 int main(){
 
@@ -93,6 +97,81 @@ bool Startup()
 	}
 	cout << "Connection established with client...\n";
 
+	std::string t_SendString = "ping";
+	
+	
+
+	
+
+	ULONGLONG m_PrevTime = GetTickCount64();
+	
+	SendData(g_ClientSocket, t_SendString);
+
+	string t_ReturnMessage = RecieveData(g_ClientSocket);
+	if (t_ReturnMessage == "ping")
+	{
+		ULONGLONG t_CurrentTime = GetTickCount64();
+		float m_DeltaTime = (t_CurrentTime - m_PrevTime) / 1000.0f;
+		cout << "Pinged client for " << m_DeltaTime << " MS\n";
+	}
+	else
+	{
+		cout << "Recieved unkown message...\n";
+	}
+
+	system("pause");
+
 	return false;
 
+}
+
+void SendData(SOCKET p_Socket, std::string p_Message)
+{
+	//copy string message into char array
+	char t_Buffer[512] = { 0 };
+	strncpy_s(t_Buffer, p_Message.c_str(), sizeof(t_Buffer));
+	t_Buffer[sizeof(t_Buffer)-1] = 0;
+
+	int t_DataLeft = 512;
+	int t_DataPos = 0;
+	int t_DataSent = 0;
+
+	do
+	{
+		t_DataSent = send(p_Socket, &t_Buffer[t_DataPos], t_DataLeft, 0);
+		t_DataLeft -= t_DataSent;
+		t_DataPos += t_DataSent;
+
+	} while (t_DataLeft > 0);
+
+	memset(&t_Buffer, 0, sizeof(t_Buffer));
+}
+
+std::string RecieveData(SOCKET p_Socket)
+{
+	char t_Buffer[512] = { 0 };
+
+	int t_DataLeft = 512;
+	int t_DataPos = 0;
+	int t_DataSent = 0;
+
+	do
+	{
+		if (t_DataSent == SOCKET_ERROR)
+		{
+			cout << "Error receiving data" << endl;
+			memset(&t_Buffer, 0, sizeof(t_Buffer));
+			break;
+		}
+
+		t_DataSent = recv(p_Socket, &t_Buffer[t_DataPos], t_DataLeft, 0);
+		t_DataLeft -= t_DataSent;
+		t_DataPos += t_DataSent;
+	} while (t_DataLeft > 0);
+
+	string text = t_Buffer;
+
+	memset(&t_Buffer, 0, sizeof(t_Buffer));
+
+	return text;
 }
