@@ -10,20 +10,30 @@ NetStream::~NetStream()
 {
 }
 
-void NetStream::Initialize(char* p_Buffer, int p_Length)
+void NetStream::Initialize(NET_MESSAGE* p_Buffer, int p_Length)
 {
+	m_isReading = false;
+	m_isWriting = false;
 	m_Message = p_Buffer;
 	m_MaxLength = p_Length;
 	m_WrittenBits = 0;
 	m_CurrentSize = 0;
-	int m_ReadBits;
-	int m_ReadCount;
+	m_ReadBits = 0;
+	m_ReadCount = 0;
 }
 
 
 int NetStream::Read(int p_BytesToRead, void* p_Buffer)
 {
-	int o_Value = 0;
+	p_BytesToRead *= 8; //32 bits ints noob!
+	if (m_isWriting)
+		return 0;
+	
+	else
+		m_isReading = true;
+
+
+	//int o_Value = 0;
 	int t_ValueBits = 0;
 	int t_Get = 0;
 	int t_Fraction = 0;
@@ -43,15 +53,28 @@ int NetStream::Read(int p_BytesToRead, void* p_Buffer)
 		t_Fraction = m_Message[m_ReadCount - 1];
 		t_Fraction >>= m_ReadBits;
 		t_Fraction &= ((1 << t_Get) - 1);
-		o_Value |= t_Fraction << t_ValueBits;
+		*(int*)p_Buffer |= t_Fraction << t_ValueBits;
 
 		t_ValueBits += t_Get;
 		m_ReadBits = (m_ReadBits + t_Get) & 7;
 	}
+	
+	return 0;
+
 }
 
 int NetStream::Write(int p_BytesToWrite, const void* p_Buffer)
 {
+	int o_something = p_BytesToWrite;
+	p_BytesToWrite *= 8;
+	if (m_isReading)
+		return 0;
+
+	else
+		m_isWriting = true;
+
+
+	
 	int t_Put = 0;
 	int t_Fraction = 0;
 
@@ -69,19 +92,21 @@ int NetStream::Write(int p_BytesToWrite, const void* p_Buffer)
 			t_Put = p_BytesToWrite;
 		}
 
-		t_Fraction = (int)p_Buffer & ((1 << t_Put) - 1);
+		t_Fraction = *(int*)p_Buffer & ((1 << t_Put) - 1);
 		m_Message[m_CurrentSize - 1] |= t_Fraction << m_WrittenBits;
 		p_BytesToWrite -= t_Put;
+		*(int*)p_Buffer >>= t_Put;
 		m_WrittenBits = (m_WrittenBits + t_Put) & 7;
 	}
+	return o_something;
 }
 
-bool SetCurPos(int p_Pos)
+bool NetStream::SetCurPos(int p_Pos)
 {
-
+	return true;
 }
 
-int GetCurPos()
+int NetStream::GetCurPos()
 {
-
+	return 0;
 }

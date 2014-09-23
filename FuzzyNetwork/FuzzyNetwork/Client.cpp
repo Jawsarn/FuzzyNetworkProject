@@ -2,6 +2,7 @@
 #define _WINSOCK_DEPRECATED_NO_WARNINGS
 #include <winsock2.h>
 #include <iostream>
+#include "NetStream.h"
 
 
 using namespace std;
@@ -14,7 +15,7 @@ std::string RecieveData(SOCKET p_Socket);
 
 int main(){
 
-	WORD word = MAKEWORD(2, 2);
+	/*WORD word = MAKEWORD(2, 2);
 	WSADATA data;
 
 
@@ -44,12 +45,33 @@ int main(){
 	if (t_Message == "ping")
 	{
 		SendData(fuzzySock, "ping");
-	}
+	}*/
+
+	NET_MESSAGE fuzzy_Mess[MAX_SIZE_OF_BUFFER];
+	NetStream fuzzy_Stream = NetStream();
+
+	fuzzy_Stream.Initialize(fuzzy_Mess, sizeof(fuzzy_Mess));
+	WriteInt(fuzzy_Stream, 69);
+	WriteInt(fuzzy_Stream, 13);
+	WriteInt(fuzzy_Stream, 34);
+	WriteFloat(fuzzy_Stream, 24.3f);
+	//WriteBool(fuzzy_Stream, true);
+	WriteString(fuzzy_Stream, "fuzzy message is okey if we get 1337 after this");
+	WriteInt(fuzzy_Stream, 1337);
+
+	fuzzy_Stream.Initialize(fuzzy_Mess, sizeof(fuzzy_Mess));
+	int fuzzyInt1 = ReadInt(fuzzy_Stream);
+	int fuzzyInt2 = ReadInt(fuzzy_Stream);
+	int fuzzyInt3 = ReadInt(fuzzy_Stream);
+	float fuzzyFloat1 = ReadFloat(fuzzy_Stream);
+	//bool fuzzyBool1 = ReadBool(fuzzy_Stream);
+	string fuzzyString = ReadString(fuzzy_Stream);
+	int fuzzyInt4 = ReadInt(fuzzy_Stream);
 
 
 	system("pause");
-	closesocket(fuzzySock);
-	WSACleanup();
+	//closesocket(fuzzySock);
+	//WSACleanup();
 	return 0;
 }
 
