@@ -7,12 +7,21 @@ public:
 	NetStream();
 	~NetStream();
 
-	
+	void Initialize(char* p_Buffer, int p_Length);
 
-	virtual int Read(int p_BytesToRead, void* p_Buffer);
-	virtual int Write(int p_BytesToWrite, const void* p_Buffer);
+	int Read(int p_BytesToRead, void* p_Buffer);
+	int Write(int p_BytesToWrite, const void* p_Buffer);
 
-	virtual bool SetCurPos(int p_Pos);
-	virtual int GetCurPos();
+	bool SetCurPos(int p_Pos);
+	int GetCurPos();
+
+private:
+	char * m_Message;
+	int m_MaxLength;
+	int m_WrittenBits;
+	int m_CurrentSize;
+
+	int m_ReadBits;
+	int m_ReadCount;
 };
 

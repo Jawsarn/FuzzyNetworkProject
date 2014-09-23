@@ -49,7 +49,7 @@ bool Startup()
 		cout << "Failed to startup Winsock Library\n";
 		return false;
 	}
-	cout << "Starting Server...\n";
+	cout << "Starting FuzzyServer...\n";
 
 
 	//create server socket
@@ -80,7 +80,7 @@ bool Startup()
 
 
 	//tell how many clients the socket can queue
-	listen(g_ServerSocket, 5); //the backlock number is how many connections to be expected
+	listen(g_ServerSocket, 1); //the backlock number is how many connections to be expected
 
 	cout << "Listening complete...\n";
 
@@ -116,7 +116,7 @@ bool Startup()
 	}
 	else
 	{
-		cout << "Recieved unkown message...\n";
+		cout << "Recieved unkown fuzzymessage...\n";
 	}
 
 	system("pause");
